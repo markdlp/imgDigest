@@ -2,11 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os/signal"
-	"strings"
 	"syscall"
 	"time"
 
@@ -28,19 +26,10 @@ func main() {
 
 	router.Static("/", "public")
 
-	router.POST("../upload", GetFiles)
+	router.POST("/upload", GetFiles)
 
-	inputFolder := "../upload"
+	router.GET("/download", SendFiles)
 
-	fileTypes, err := ProcessFilesByType(inputFolder)
-	if err != nil {
-		fmt.Println("Error organizing files:", err)
-	} else {
-		fmt.Println("Files organized successfully!")
-	}
-
-	fileDates, _ := GetDates(inputFolder, fileTypes[0])
-	fmt.Println(strings.Join(fileDates, "\n"))
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	srv := &http.Server{
 		Addr:    ":8080",

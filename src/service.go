@@ -1,7 +1,10 @@
 package main
 
 import (
+	"archive/zip"
+	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"slices"
@@ -9,7 +12,7 @@ import (
 	"github.com/barasher/go-exiftool"
 )
 
-func GetDates(inputFolder string, fileType string) ([]string, error) {
+func GetDates(inputFolder string, fileTypes []string) ([][]string, error) {
 	et, err := exiftool.NewExiftool()
 	if err != nil {
 		fmt.Printf("Error when intializing: %v\n", err)
@@ -17,30 +20,79 @@ func GetDates(inputFolder string, fileType string) ([]string, error) {
 	}
 	defer et.Close()
 
-	dir := inputFolder + "/" + fileType
+	fileDates := make([][]string, len(fileTypes))
+	for i, fileType := range fileTypes {
 
-	files, err := os.ReadDir(dir)
-	if err != nil {
-		return nil, err
-	}
+		fileDates[i] = append(fileDates[i], fileType)
 
-	fileDates := []string{}
-	for _, file := range files {
-		fileInfos := et.ExtractMetadata(dir + `/` + file.Name())
+		dir := inputFolder + `/` + fileType
 
-		for _, fileInfo := range fileInfos {
-			if fileInfo.Err != nil {
-				fmt.Printf("Error concerning %v: %v\n", fileInfo.File, fileInfo.Err)
-				continue
-			}
+		files, err := os.ReadDir(dir)
+		if err != nil {
+			return nil, err
+		}
 
-			for k, v := range fileInfo.Fields {
-				fmt.Printf("[%v] %v\n", k, v)
+		for _, file := range files {
+			fileInfos := et.ExtractMetadata(dir + `/` + file.Name())
+
+			for _, fileInfo := range fileInfos {
+				if fileInfo.Err != nil {
+					fmt.Printf("Error concerning %v: %v\n", fileInfo.File, fileInfo.Err)
+					continue
+				}
+
+				fileDates[i] = append(fileDates[i], fileInfo.Fields["CreateDate"].(string))
 			}
 		}
 	}
 
 	return fileDates, nil
+}
+
+func setNames(inputFolder string, outputFolder string, fileDates [][]string) error {
+
+	dupCount := 0 // never > 9
+	for i := 1; i < len(fileDates); i++ {
+		for j := 0; j < len(fileDates[i]); j++ {
+			if fileDates[i][j] == fileDates[i][j-1][:len(fileDates[0])] {
+				dupCount++
+				fileDates[i][j] = fileDates[i][j] + `_` + fmt.Sprint(dupCount)
+			} else {
+				dupCount = 0
+			}
+		}
+	}
+
+	// Create outputfolder if it doesn't exist
+	if err := os.MkdirAll(outputFolder, os.ModePerm); err != nil {
+		return fmt.Errorf("error creating folder %s: %w", outputFolder, err)
+	}
+
+	for i := 0; i < len(fileDates); i++ {
+
+		subfolderPath := filepath.Join(outputFolder, fileDates[i][0])
+
+		// Create outputfolder if it doesn't exist
+		if err := os.MkdirAll(subfolderPath, os.ModePerm); err != nil {
+			return fmt.Errorf("error creating folder %s: %w", subfolderPath, err)
+		}
+
+		files, err := os.ReadDir(inputFolder + `/` + fileDates[i][0])
+		if err != nil {
+			return err
+		}
+
+		for j := 1; j < len(fileDates[i]); j++ {
+
+			newFilePath := filepath.Join(outputFolder, fileDates[i][0], fileDates[i][j])
+			oldFilePath := filepath.Join(inputFolder, fileDates[i][0], files[j-1].Name())
+			// Move the file
+			if err := os.Rename(oldFilePath, newFilePath); err != nil {
+				return fmt.Errorf("error moving file %s: %w", files[j-1].Name(), err)
+			}
+		}
+	}
+	return nil
 }
 
 func ProcessFilesByType(inputFolder string) ([]string, error) {
@@ -51,14 +103,13 @@ func ProcessFilesByType(inputFolder string) ([]string, error) {
 
 	fileTypes := []string{}
 	for _, file := range files {
-		if file.IsDir() {
-			if !slices.Contains(fileTypes, file.Name()) {
-				fileTypes = append(fileTypes, file.Name())
-			}
-			continue
-		} // Skip directories
 
 		fileType := filepath.Ext(file.Name())
+
+		if !slices.Contains(fileTypes, fileType) {
+			fileTypes = append(fileTypes, fileType)
+		}
+
 		filePath := filepath.Join(inputFolder, file.Name())
 		subfolderPath := filepath.Join(inputFolder, fileType)
 
@@ -75,4 +126,67 @@ func ProcessFilesByType(inputFolder string) ([]string, error) {
 	}
 
 	return fileTypes, nil
+}
+
+func compressFolder(folder string) ([]byte, error) {
+	file, err := os.Create("output.zip")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	w := zip.NewWriter(file)
+	defer w.Close()
+
+	walker := func(path string, info os.FileInfo, err error) error {
+		fmt.Printf("Crawling: %#v\n", path)
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		file, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		// Ensure that `path` is not absolute; it should not start with "/".
+		// This snippet happens to work because I don't use
+		// absolute paths, but ensure your real-world code
+		// transforms path into a zip-root relative path.
+		f, err := w.Create(path)
+		if err != nil {
+			return err
+		}
+
+		_, err = io.Copy(f, file)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+	err = filepath.Walk(folder, walker)
+	if err != nil {
+		panic(err)
+	}
+
+	// Get the file size
+	stat, err := file.Stat()
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	// Read the file into a byte slice
+	bs := make([]byte, stat.Size())
+	_, err = bufio.NewReader(file).Read(bs)
+	if err != nil && err != io.EOF {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	return bs, nil
 }
