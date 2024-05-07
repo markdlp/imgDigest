@@ -29,19 +29,30 @@ func GetFiles(c *gin.Context) {
 	}
 	c.String(http.StatusOK, fmt.Sprintf("%d files uploaded!", len(files)))
 
-	inputFolder := "../upload"
+	tmpFolder := "../upload"
 
-	fileTypes, err := ProcessFilesByType(inputFolder)
+	fileTypes, err := ProcessFilesByType(tmpFolder)
 	if err != nil {
 		fmt.Println("Error organizing files:", err)
 	} else {
 		fmt.Println("Files organized successfully!")
 	}
 
-	fileDates, _ := GetDates(inputFolder, fileTypes)
-	setNames(inputFolder, "../download", fileDates)
-	compressFolder("../download")
+	fileDates, _ := GetDates(tmpFolder, fileTypes)
+	setNames(tmpFolder, tmpFolder, fileDates)
+}
 
-	c.Header("Content-Disposition", "attachment; filename=output.zip")
-	http.ServeFile(c.Writer, c.Request, "../output.zip")
+func SendFile(c *gin.Context) {
+
+	file, err := compressFolder("../upload")
+	if err != nil {
+		c.String(http.StatusBadRequest, "Error zipping folder:", err.Error())
+		return
+	}
+
+	// Set download headers
+	c.Header("Content-Disposition", "attachment; filename=../output.zip")
+	c.Header("Content-Type", "application/zip")
+	c.Header("Content-Length", fmt.Sprintf("%d", len(file)))
+	c.Writer.Write(file)
 }

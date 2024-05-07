@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	"github.com/barasher/go-exiftool"
 )
@@ -40,7 +41,8 @@ func GetDates(inputFolder string, fileTypes []string) ([][]string, error) {
 					continue
 				}
 
-				fileDates[i] = append(fileDates[i], fileInfo.Fields["CreateDate"].(string))
+				fileDates[i] = append(fileDates[i],
+					strings.ReplaceAll(fileInfo.Fields["CreateDate"].(string), ":", "-"))
 			}
 		}
 	}
@@ -86,7 +88,7 @@ func setNames(inputFolder string, outputFolder string, fileDates [][]string) err
 			newFilePath := filepath.Join(outputFolder, fileDates[i][0], fileDates[i][j])
 			oldFilePath := filepath.Join(inputFolder, fileDates[i][0], files[j-1].Name())
 			// Move the file
-			if err := os.Rename(oldFilePath, newFilePath); err != nil {
+			if err := os.Rename(oldFilePath, newFilePath+fileDates[i][0]); err != nil {
 				return fmt.Errorf("error moving file %s: %w", files[j-1].Name(), err)
 			}
 		}
@@ -127,8 +129,8 @@ func ProcessFilesByType(inputFolder string) ([]string, error) {
 	return fileTypes, nil
 }
 
-func compressFolder(folder string) error {
-	file, err := os.Create("../output.zip")
+func compressFolder(inputFolder string) ([]byte, error) {
+	file, err := os.Create("output.zip")
 	if err != nil {
 		panic(err)
 	}
@@ -167,10 +169,10 @@ func compressFolder(folder string) error {
 
 		return nil
 	}
-	err = filepath.Walk(folder, walker)
+	err = filepath.Walk(inputFolder, walker)
 	if err != nil {
 		panic(err)
 	}
 
-	return nil
+	return os.ReadFile("output.zip")
 }

@@ -22,11 +22,13 @@ func main() {
 	router.SetTrustedProxies([]string{"127.0.0.1", "192.168.1.2", "10.0.0.0/8"})
 
 	// Set a lower memory limit for multipart forms (default is 32 MiB)
-	router.MaxMultipartMemory = 8 << 20 // 8 MiB
+	//router.MaxMultipartMemory = 8 << 20 // 8 MiB
 
-	router.Static("/", "public")
+	router.Static("/upload", "public")
 
 	router.POST("/upload", GetFiles)
+
+	router.GET("/download", SendFile)
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	srv := &http.Server{
