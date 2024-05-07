@@ -2,7 +2,6 @@ package main
 
 import (
 	"archive/zip"
-	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -128,8 +127,8 @@ func ProcessFilesByType(inputFolder string) ([]string, error) {
 	return fileTypes, nil
 }
 
-func compressFolder(folder string) ([]byte, error) {
-	file, err := os.Create("output.zip")
+func compressFolder(folder string) error {
+	file, err := os.Create("../output.zip")
 	if err != nil {
 		panic(err)
 	}
@@ -173,20 +172,5 @@ func compressFolder(folder string) ([]byte, error) {
 		panic(err)
 	}
 
-	// Get the file size
-	stat, err := file.Stat()
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
-
-	// Read the file into a byte slice
-	bs := make([]byte, stat.Size())
-	_, err = bufio.NewReader(file).Read(bs)
-	if err != nil && err != io.EOF {
-		fmt.Println(err)
-		return nil, err
-	}
-
-	return bs, nil
+	return nil
 }

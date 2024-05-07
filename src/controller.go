@@ -40,17 +40,8 @@ func GetFiles(c *gin.Context) {
 
 	fileDates, _ := GetDates(inputFolder, fileTypes)
 	setNames(inputFolder, "../download", fileDates)
-}
-
-func SendFiles(c *gin.Context) {
-
-	file, err := compressFolder("../download")
-
-	if err != nil {
-		c.String(http.StatusBadRequest, "Problem openening file: %s", err.Error())
-		return
-	}
+	compressFolder("../download")
 
 	c.Header("Content-Disposition", "attachment; filename=output.zip")
-	c.Data(http.StatusOK, "application/octet-stream", file)
+	http.ServeFile(c.Writer, c.Request, "../output.zip")
 }

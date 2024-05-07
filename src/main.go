@@ -28,8 +28,6 @@ func main() {
 
 	router.POST("/upload", GetFiles)
 
-	router.GET("/download", SendFiles)
-
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	srv := &http.Server{
 		Addr:    ":8080",
