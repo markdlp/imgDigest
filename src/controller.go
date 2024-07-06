@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
+
+var tmpFolder = "../upload"
 
 func GetFiles(c *gin.Context) {
 
@@ -25,11 +28,8 @@ func GetFiles(c *gin.Context) {
 		filename := filepath.Base(file.Filename)
 
 		// Upload the file to specific dst.
-		c.SaveUploadedFile(file, "../upload/"+filename)
+		c.SaveUploadedFile(file, tmpFolder+"/"+filename)
 	}
-	c.String(http.StatusOK, fmt.Sprintf("%d files uploaded!", len(files)))
-
-	tmpFolder := "../upload"
 
 	fileTypes, err := ProcessFilesByType(tmpFolder)
 	if err != nil {
@@ -40,18 +40,22 @@ func GetFiles(c *gin.Context) {
 
 	fileDates, _ := GetDates(tmpFolder, fileTypes)
 	setNames(tmpFolder, tmpFolder, fileDates)
+
+	c.Redirect(http.StatusSeeOther, "/download")
 }
 
 func SendFile(c *gin.Context) {
 
-	file, err := compressFolder("../upload")
+	compressFolder(tmpFolder)
+
+	file, err := os.ReadFile("../output.zip")
 	if err != nil {
 		c.String(http.StatusBadRequest, "Error zipping folder:", err.Error())
 		return
 	}
 
 	// Set download headers
-	c.Header("Content-Disposition", "attachment; filename=../output.zip")
+	c.Header("Content-Disposition", "attachment; filename=output.zip")
 	c.Header("Content-Type", "application/zip")
 	c.Header("Content-Length", fmt.Sprintf("%d", len(file)))
 	c.Writer.Write(file)

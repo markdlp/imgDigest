@@ -129,8 +129,8 @@ func ProcessFilesByType(inputFolder string) ([]string, error) {
 	return fileTypes, nil
 }
 
-func compressFolder(inputFolder string) ([]byte, error) {
-	file, err := os.Create("output.zip")
+func compressFolder(inputFolder string) {
+	file, err := os.Create("../output.zip")
 	if err != nil {
 		panic(err)
 	}
@@ -173,6 +173,4 @@ func compressFolder(inputFolder string) ([]byte, error) {
 	if err != nil {
 		panic(err)
 	}
-
-	return os.ReadFile("output.zip")
 }
