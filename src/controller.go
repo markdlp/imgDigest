@@ -30,6 +30,9 @@ func GetFiles(c *gin.Context) {
 		// Upload the file to specific dst.
 		c.SaveUploadedFile(file, tmpFolder+"/"+filename)
 	}
+}
+
+func SendFile(c *gin.Context) {
 
 	fileTypes, err := ProcessFilesByType(tmpFolder)
 	if err != nil {
@@ -40,11 +43,6 @@ func GetFiles(c *gin.Context) {
 
 	fileDates, _ := GetDates(tmpFolder, fileTypes)
 	setNames(tmpFolder, tmpFolder, fileDates)
-
-	c.Redirect(http.StatusSeeOther, "/download")
-}
-
-func SendFile(c *gin.Context) {
 
 	compressFolder(tmpFolder)
 
@@ -59,4 +57,14 @@ func SendFile(c *gin.Context) {
 	c.Header("Content-Type", "application/zip")
 	c.Header("Content-Length", fmt.Sprintf("%d", len(file)))
 	c.Writer.Write(file)
+
+	e := os.Remove("../output.zip")
+	if e != nil {
+		log.Fatal(e)
+	}
+
+	e = os.RemoveAll(tmpFolder)
+	if e != nil {
+		log.Fatal(e)
+	}
 }
