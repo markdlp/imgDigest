@@ -1,6 +1,12 @@
 $(document).ready(function () {
+
+    $('#files').on("change", function() {
+        let val = $(this).val(), btn = $('#submit');
+        val ? btn.removeAttr("disabled") : btn.attr("disabled");
+    });
+
     $('#uploadForm').on('submit', function (event) {
-        event.preventDefault();
+       event.preventDefault();
 
         var formData = new FormData(this);
         $.ajax({
@@ -30,6 +36,10 @@ $(document).ready(function () {
             success: function (response) {
                 // Redirect to the desired URL after successful upload
                 window.location.href = '/download';
+
+                $('#uploadForm').trigger("reset");
+                $('.progress').hide();
+                $('#submit').attr('disabled', 'disabled');
             },
             error: function () {
                 alert('An error occurred while uploading the files.');
