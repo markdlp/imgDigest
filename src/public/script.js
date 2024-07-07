@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
     $('#files').on("change", function() {
         let val = $(this).val(), btn = $('#submit');
         val ? btn.removeAttr("disabled") : btn.attr("disabled");

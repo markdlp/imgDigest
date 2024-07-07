@@ -53,9 +53,10 @@ func GetDates(inputFolder string, fileTypes []string) ([][]string, error) {
 func setNames(inputFolder string, outputFolder string, fileDates [][]string) error {
 
 	dupCount := 0 // never > 9
-	for i := 1; i < len(fileDates); i++ {
-		for j := 0; j < len(fileDates[i]); j++ {
-			if fileDates[i][j] == fileDates[i][j-1][:len(fileDates[0])] {
+
+	for i := 0; i < len(fileDates); i++ {
+		for j := 1; j < len(fileDates[i]); j++ {
+			if fileDates[i][j] == fileDates[i][j-1][:len(fileDates[i][j-1])-2] {
 				dupCount++
 				fileDates[i][j] = fileDates[i][j] + `_` + fmt.Sprint(dupCount)
 			} else {
