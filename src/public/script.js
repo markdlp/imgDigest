@@ -1,11 +1,11 @@
 $(document).ready(function () {
-    $('#files').on("change", function() {
+    $('#files').on("change", function () {
         let val = $(this).val(), btn = $('#submit');
         val ? btn.removeAttr("disabled") : btn.attr("disabled");
     });
 
     $('#uploadForm').on('submit', function (event) {
-       event.preventDefault();
+        event.preventDefault();
 
         var formData = new FormData(this);
         $.ajax({
