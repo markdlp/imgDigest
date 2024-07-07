@@ -7,21 +7,27 @@
   <title>Image Digest</title>
   <!-- Bootstrap CSS -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
-    <h1 class="text-center">Image Digest</h1>
-    <form id="uploadForm" class="mt-4 w-50">
-      <div class="form-group">
-        <label for="files">Select files:</label>
-        <input type="file" class="form-control-file" id="files" name="files" multiple>
+  <div class="bg">
+    <div class="overlay"></div>
+    <div class="container d-flex flex-column justify-content-center align-items-center min-vh-100">
+      <div class="content text-center align-items-center">
+        <h1 class="text-center">Image Digest</h1>
+        <form id="uploadForm" class="mt-4 w-50">
+          <div class="form-group">
+            <label for="files">Select files:</label>
+            <input type="file" class="form-control-file" id="files" name="files" multiple>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Upload</button>
+        </form>
+        <div class="progress mt-3 w-50" style="display: none;">
+          <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0"
+            aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
       </div>
-      <button type="submit" class="btn btn-primary btn-block">Upload</button>
-    </form>
-    <div class="progress mt-3 w-50" style="display: none;">
-      <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0"
-        aria-valuemin="0" aria-valuemax="100"></div>
     </div>
   </div>
   <!-- jQuery -->

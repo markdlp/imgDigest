@@ -1,0 +1,41 @@
+body,
+html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.bg {
+    /* The image used */
+    background-image: url("img/dejan-zakic-FYYA8tTgIwA-unsplash.jpg");
+
+    /* Full height */
+    height: 100%;
+
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.content {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.8); /* White background with transparency */
+    padding: 40px; /* Increased padding for more space inside the box */
+    border-radius: 10px;
+    backdrop-filter: blur(10px); /* Blur effect */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Optional: adds a shadow for better contrast */
+    width: 70%; /* Increased width */
+    max-width: 800px; /* Maximum width to ensure it doesn't get too large on bigger screens */
+  }
+  
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Optional: add a dark overlay for better contrast */
+    z-index: 0;
+  }
