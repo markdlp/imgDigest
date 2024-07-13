@@ -1,9 +1,9 @@
 services:
-  app:
+  server:
     build: .
     container_name: imgDigest
     command: /usr/local/bin/app
     ports:
-      - 8080:8080
+        - 8080:8080
     volumes:
-      - .:/usr/src/app
+        - .:/usr/src/app
