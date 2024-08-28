@@ -4,6 +4,6 @@ services:
     container_name: imgDigest
     command: /usr/local/bin/app
     ports:
-        - 8080:8080
+        - 80:8080
     volumes:
         - .:/usr/src/app
