@@ -1,7 +1,10 @@
 services:
   server:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: imgDigest
+    image: img-digest
     command: /usr/local/bin/app
     ports:
         - 80:8080
