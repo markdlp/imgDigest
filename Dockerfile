@@ -2,7 +2,7 @@ FROM golang
 
 WORKDIR /usr/src/app
 
-RUN apt update && apt install exiftool -y
+RUN apt update && apt install -y exiftool git
 
 ENV GIN_MODE=release
 
