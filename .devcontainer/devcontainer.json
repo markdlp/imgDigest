@@ -1,23 +1,19 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
 {
-	"name": "Existing Dockerfile",
-	"build": {
-		// Sets the run context to one level up instead of the .devcontainer folder.
-		"context": "..",
-		// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
-		"dockerfile": "../Dockerfile"
-	},
+	"name": "imgDigest",
+	//"build": {"context": "..","dockerfile": "../Dockerfile"},
+	"image": "mcr.microsoft.com/devcontainers/go:1-1.22-bookworm",
 
 	"features": {
+		"ghcr.io/devcontainers/features/go:1": {},
   		"ghcr.io/devcontainers/features/github-cli:1": {}
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	"forwardPorts": [8080],
 
-	// Uncomment the next line to run commands after the container is created.
-	// "postCreateCommand": "cat /etc/os-release",
+	"postCreateCommand": "apt update && apt install -y exiftool",
 
 	// Configure tool-specific properties.
 	"customizations": {
@@ -27,8 +23,13 @@
 			"settings": {},
 			"extensions": ["golang.Go"]
 		}
+	},
+
+	"runArgs": [
+  		"--userns=keep-id"
+	],
+	"containerEnv": {
+		"HOME": "/usr/src/app"
 	}
 
-	// Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "devcontainer"
 }
