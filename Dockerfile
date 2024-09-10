@@ -14,5 +14,5 @@ COPY . .
 RUN go build -v -o /usr/local/bin/app ./...
 
 EXPOSE 8080
-
-ENTRYPOINT [ "/usr/local/bin/app" ]
+# ENTRYPOINT [ "app" ]
+CMD [ "app" ]

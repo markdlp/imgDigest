@@ -130,15 +130,13 @@ func ProcessFilesByType(inputFolder string) ([]string, error) {
 	return fileTypes, nil
 }
 
-func compressFolder(inputFolder string) {
+func compressFolder(inputFolder string) error {
 	file, err := os.Create("../output.zip")
 	if err != nil {
-		panic(err)
+		return err
 	}
-	defer file.Close()
 
 	w := zip.NewWriter(file)
-	defer w.Close()
 
 	walker := func(path string, info os.FileInfo, err error) error {
 		fmt.Printf("Crawling: %#v\n", path)
@@ -152,7 +150,7 @@ func compressFolder(inputFolder string) {
 		if err != nil {
 			return err
 		}
-		defer file.Close()
+		//defer file.Close()
 
 		f, err := w.Create(path)
 		if err != nil {
@@ -164,10 +162,12 @@ func compressFolder(inputFolder string) {
 			return err
 		}
 
-		return nil
+		return file.Close()
 	}
-	err = filepath.Walk(inputFolder, walker)
-	if err != nil {
-		panic(err)
+
+	if err = filepath.Walk(inputFolder, walker); err != nil {
+		file.Close()
+		return err
 	}
+	return file.Close()
 }
