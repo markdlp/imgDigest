@@ -3,32 +3,38 @@
 {
 	"name": "imgDigest",
 	
-	"dockerComposeFile": ["../docker-compose.yml"],
-    "service": "img-digest",
-	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	//"dockerComposeFile": ["../docker-compose.yml"],
+    //"service": "img-digest",
+    //"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	
+	"build": {
+		"context": "..",
+		"dockerfile": "../Dockerfile"
+	},
 
 	"features": {
 		"ghcr.io/devcontainers/features/go:1": {},
-  		"ghcr.io/devcontainers/features/github-cli:1": {}
+		"ghcr.io/devcontainers/features/github-cli:1": {}
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [8080],
 
-	"postCreateCommand": "apt update && apt install -y exiftool",
+	//"postCreateCommand": "apt update && apt install -y exiftool",
 
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.
-			"settings": {},
+			"settings": {
+				"terminal.integrated.shell.linux": "/bin/zsh"
+			},
 			"extensions": ["golang.Go", "ms-azuretools.vscode-docker"]
 		}
 	},
-
-	// "runArgs": ["--userns=keep-id"],
 	"containerEnv": {
-		"HOME": "/usr/src/app"
+		"HOME": "/usr/src"
 	}
+	//,"remoteUser": "mark"
 }

@@ -1,4 +1,4 @@
-name: imgDigest
+name: compose
 services:
   img-digest:
     build:
@@ -7,9 +7,10 @@ services:
     container_name: imgDigest
     command: sleep infinity
     ports:
-        - 80:8080
+      - 8080:8080
     volumes:
-        - ./src/public:/usr/local/bin/public
-        - ../..:/workspaces:cached
-volumes:
-  ./src/public
+      - ./src/public:/usr/local/bin/public
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined

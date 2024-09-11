@@ -1,7 +1,5 @@
 FROM golang as builder
 
-RUN apt update && apt install -y exiftool
-
 WORKDIR /usr/src
 
 COPY go.mod go.sum ./
@@ -12,6 +10,8 @@ COPY . .
 RUN go build -v -o app ./...
 
 FROM golang
+
+RUN apt update && apt install -y exiftool
 
 WORKDIR /usr/local/bin
 
