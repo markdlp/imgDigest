@@ -1,12 +1,15 @@
+name: imgDigest
 services:
-  server:
+  img-digest:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: imgDigest
-    image: img-digest
-    command: /usr/local/bin/app
+    command: sleep infinity
     ports:
         - 80:8080
     volumes:
-        - .:/usr/src/app
+        - ./src/public:/usr/local/bin/public
+        - ../..:/workspaces:cached
+volumes:
+  ./src/public

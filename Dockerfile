@@ -1,18 +1,23 @@
-FROM golang
-
-WORKDIR /usr/src/app
+FROM golang as builder
 
 RUN apt update && apt install -y exiftool
 
-ENV GIN_MODE=release
+WORKDIR /usr/src
 
-# pre-copy/cache go.mod for pre-downloading dependencies and only redownloading them in subsequent builds if they change
 COPY go.mod go.sum ./
-RUN go mod download && go mod verify
+RUN go mod download && go mod verify && go mod tidy
 
 COPY . .
-RUN go build -v -o /usr/local/bin/app ./...
+
+RUN go build -v -o app ./...
+
+FROM golang
+
+WORKDIR /usr/local/bin
+
+ENV GIN_MODE=release
+
+COPY --from=builder /usr/src/ /usr/local/bin/
 
 EXPOSE 8080
-# ENTRYPOINT [ "app" ]
-CMD [ "app" ]
+ENTRYPOINT ["/usr/local/bin/app"]

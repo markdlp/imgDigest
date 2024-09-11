@@ -13,5 +13,5 @@ func main() {
 	router.POST("/upload", GetFiles)
 	router.GET("/download", SendFile)
 
-	router.Run()
+	router.Run(":8080")
 }

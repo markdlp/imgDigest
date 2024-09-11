@@ -2,8 +2,10 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
 {
 	"name": "imgDigest",
-	"build": {"context": "..","dockerfile": "../Dockerfile"},
-	//"image": "mcr.microsoft.com/devcontainers/go:1-1.22-bookworm",
+	
+	"dockerComposeFile": ["../docker-compose.yml"],
+    "service": "img-digest",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
 	"features": {
 		"ghcr.io/devcontainers/features/go:1": {},
@@ -25,9 +27,7 @@
 		}
 	},
 
-	"runArgs": [
-  		"--userns=keep-id"
-	],
+	// "runArgs": ["--userns=keep-id"],
 	"containerEnv": {
 		"HOME": "/usr/src/app"
 	}
