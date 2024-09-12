@@ -11,3 +11,4 @@ A hobby project for extracting image metadata and renaming the images according 
 - [ ] **Add support for audio recordings**: at least one format
 - [ ] **Maybe Introduce a workspace and a docker-compose.devcontainer.yml**: such as [here](https://code.visualstudio.com/docs/devcontainers/create-dev-container)
 - [ ] **Move Dockerfile into .devcontainer**: and make it such that devcontainer.json utilizes docker-compose.yml
+- [ ] **Use Alpine as the last Dockefile step**: to minimize executable size
