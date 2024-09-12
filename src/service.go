@@ -130,7 +130,7 @@ func ProcessFilesByType(inputFolder string) ([]string, error) {
 	return fileTypes, nil
 }
 
-func compressFolder(inputFolder string) error {
+func compressFolder(inputFolder string) error { // todo: Close properly the file
 	file, err := os.Create("../output.zip")
 	if err != nil {
 		return err

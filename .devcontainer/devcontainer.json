@@ -30,11 +30,11 @@
 			"settings": {
 				"terminal.integrated.shell.linux": "/bin/zsh"
 			},
-			"extensions": ["golang.Go", "ms-azuretools.vscode-docker"]
+			"extensions": ["golang.Go", "ms-azuretools.vscode-docker", "gruntfuggly.todo-tree"]
 		}
 	},
 	"containerEnv": {
 		"HOME": "/usr/src"
 	}
-	//,"remoteUser": "mark"
+	//,"remoteUser": "vscode"
 }
