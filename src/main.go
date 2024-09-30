@@ -16,6 +16,8 @@ func main() { // todo: make more secure
 
 	router := gin.Default()
 
+	//router.SetTrustedProxies(["", "", ""])
+
 	router.Static("/upload", "public")
 
 	router.POST("/upload", GetFiles)
